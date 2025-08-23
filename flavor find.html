@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlavorFind - Discover Amazing Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --accent: #ffd166;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --success: #06d6a0;
+            --purple: #9b5de5;
+            --pink: #f15bb5;
+            --gradient: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            --gradient-2: linear-gradient(135deg, #9b5de5 0%, #f15bb5 100%);
+            --gradient-3: linear-gradient(135deg, #00bbf9 0%, #00f5d4 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.8s ease-out;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .search-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Filter Section */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid var(--secondary);
+            color: var(--dark);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Recipes Grid */
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .recipe-card:hover .recipe-image {
+            transform: scale(1.1);
+        }
+
+        .recipe-content {
+            padding: 20px;
+        }
+
+        .recipe-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: #6c757d;
+        }
+
+        .recipe-description {
+            color: #495057;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .recipe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background: var(--gradient-3);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .view-recipe-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .view-recipe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 50px 0;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 0;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-section {
+                padding: 30px 20px;
+            }
+            
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Floating Animation */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Pulse Animation */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+            /* 🔥 Global Hover Effects for Website */
+        }
+/* Buttons */
+button:hover,
+.search-btn:hover,
+.filter-btn:hover,
+.view-recipe-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* Links */
+a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+    transition: 0.3s;
+}
+
+/* Logo */
+.logo:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* Recipe Cards */
+.recipe-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Recipe Images */
+.recipe-image:hover {
+    transform: scale(1.1);
+    transition: transform 0.4s ease;
+}
+
+/* Tags */
+.tag:hover {
+    background: var(--gradient-2);
+    transform: scale(1.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Footer */
+footer p:hover {
+    color: var(--accent);
+    transform: scale(1.05);
+    transition: 0.3s;
+    cursor: pointer;
+}
+/* Hero Section Hover */
+.hero:hover {
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); /* Background change */
+    transition: all 0.5s ease-in-out;
+    cursor: pointer;
+}
+
+/* Heading Hover */
+.hero h1:hover {
+    color: var(--accent); /* Yellow highlight */
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    transition: all 0.4s ease;
+}
+
+/* Paragraph Hover */
+.hero p:hover {
+    color: var(--light);
+    transform: scale(1.05);
+    transition: 0.4s ease;
+}
+
+     
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">FlavorFind</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1 class="floating">Discover Amazing Recipes</h1>
+            <p>Find your next culinary masterpiece with our extensive collection of delicious recipes from around the world</p>
+        </section>
+
+        <section class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for recipes..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="vegetarian">Vegetarian</button>
+                <button class="filter-btn" data-category="vegan">Vegan</button>
+                <button class="filter-btn" data-category="gluten-free">Gluten Free</button>
+                <button class="filter-btn" data-category="dessert">Desserts</button>
+                <button class="filter-btn" data-category="main-course">Main Course</button>
+            </div>
+        </section>
+
+        <div class="loader" id="loader">
+            <div class="loader-spinner"></div>
+            <p>Finding delicious recipes...</p>
+        </div>
+
+        <div class="no-results" id="noResults">
+            <h3>No recipes found</h3>
+            <p>Try adjusting your search terms or filters</p>
+        </div>
+
+        <div class="recipes-grid" id="recipesGrid">
+            <!-- Recipe cards will be dynamically generated here -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 FlavorFind. Discover your next favorite recipe.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample recipe data
+        const recipes = [
+            {
+                id: 1,
+                title: "Creamy Mushroom Pasta",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1c552ac6-ac06-4427-bc54-2375e3ec31ee.png",
+                description: "A rich and creamy pasta dish with sautéed mushrooms, garlic, and fresh herbs.",
+                category: ["main-course", "vegetarian"],
+                prepTime: "15 min",
+                cookTime: "20 min",
+                difficulty: "Easy",
+                tags: ["Italian", "Creamy", "Comfort Food"]
+            },
+            {
+                id: 2,
+                title: "Chocolate Avocado Mousse",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f0de1a87-df3b-4ea6-838a-9ad3f946a268.png",
+                description: "A healthy and decadent dessert made with ripe avocados and dark chocolate.",
+                category: ["dessert", "vegan", "gluten-free"],
+                prepTime: "10 min",
+                cookTime: "0 min",
+                difficulty: "Easy",
+                tags: ["Healthy", "Vegan", "Chocolate"]
+            },
+            {
+                id: 3,
+                title: "Mediterranean Bowl",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/183c6f0e-f62c-4a57-a2d6-dc1e0f3fa472.png",
+                description: "A colorful bowl with quinoa, roasted vegetables, hummus, and tahini dressing.",
+                category: ["main-course", "vegan", "gluten-free"],
+                prepTime: "20 min",
+                cookTime: "25 min",
+                difficulty: "Medium",
+                tags: ["Healthy", "Mediterranean", "Bowl"]
+            },
+            {
+                id: 4,
+                title: "Berry Smoothie Bowl",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5bf84b72-4dc8-4840-8516-f84d5dd9b8ce.png",
+                description: "A refreshing and nutritious breakfast bowl topped with fresh fruits and granola.",
+                category: ["breakfast", "vegan", "gluten-free"],
+                prepTime: "5 min",
+                cookTime: "0 min",
+                difficulty: "Easy",
+                tags: ["Breakfast", "Smoothie", "Healthy"]
+            },
+            {
+                id: 5,
+                title: "Spicy Thai Curry",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/8e2b9d2c-b8c0-4f21-b289-1558d9ffbe9e.png",
+                description: "A fragrant and spicy curry with coconut milk, vegetables, and aromatic herbs.",
+                category: ["main-course", "vegetarian"],
+                prepTime: "15 min",
+                cookTime: "25 min",
+                difficulty: "Medium",
+                tags: ["Thai", "Spicy", "Coconut"]
+            },
+            {
+                id: 6,
+                title: "Lemon Cheesecake",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7b91a484-837d-4e06-940a-ef08df8fee18.png",
+                description: "A creamy and tangy cheesecake with a buttery biscuit base and lemon zest.",
+                category: ["dessert"],
+                prepTime: "30 min",
+                cookTime: "45 min",
+                difficulty: "Medium",
+                tags: ["Dessert", "Creamy", "Citrus"]
+            }
+        ];
+
+        // DOM Elements
+        const recipesGrid = document.getElementById('recipesGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const loader = document.getElementById('loader');
+        const noResults = document.getElementById('noResults');
+
+        // Current filter state
+        let currentCategory = 'all';
+        let currentSearch = '';
+
+        // Initialize
+        function init() {
+            displayRecipes(recipes);
+            setupEventListeners();
+        }
+
+        // Display recipes
+        function displayRecipes(recipesToShow) {
+            recipesGrid.innerHTML = '';
+            
+            if (recipesToShow.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            recipesToShow.forEach((recipe, index) => {
+                const recipeCard = createRecipeCard(recipe, index);
+                recipesGrid.appendChild(recipeCard);
+            });
+        }
+
+        // Create recipe card HTML
+        function createRecipeCard(recipe, index) {
+            const card = document.createElement('div');
+            card.className = 'recipe-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            card.innerHTML = `
+                <div class="recipe-image-container" style="overflow: hidden; height: 200px;">
+                    <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
+                </div>
+                <div class="recipe-content">
+                    <h3 class="recipe-title">${recipe.title}</h3>
+                    <div class="recipe-meta">
+                        <span>${recipe.prepTime} prep</span>
+                        <span>${recipe.difficulty}</span>
+                    </div>
+                    <p class="recipe-description">${recipe.description}</p>
+                    <div class="recipe-tags">
+                        ${recipe.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <button class="view-recipe-btn pulse">View Recipe</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Filter recipes
+        function filterRecipes() {
+            loader.style.display = 'block';
+            
+            setTimeout(() => {
+                let filtered = recipes.filter(recipe => {
+                    const matchesCategory = currentCategory === 'all' || 
+                                          recipe.category.includes(currentCategory);
+                    const matchesSearch = recipe.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                        recipe.description.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                        recipe.tags.some(tag => tag.toLowerCase().includes(currentSearch.toLowerCase()));
+                    
+                    return matchesCategory && matchesSearch;
+                });
+                
+                displayRecipes(filtered);
+                loader.style.display = 'none';
+            }, 800);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search functionality
+            searchBtn.addEventListener('click', () => {
+                currentSearch = searchInput.value.trim();
+                filterRecipes();
+            });
+
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    currentSearch = searchInput.value.trim();
+                    filterRecipes();
+                }
+            });
+
+            // Filter buttons
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    filterRecipes();
+                });
+            });
+
+            // View recipe buttons (would normally open a modal or new page)
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-recipe-btn')) {
+                    const card = e.target.closest('.recipe-card');
+                    const title = card.querySelector('.recipe-title').textContent;
+                    alert(`Opening recipe for: ${title}\n\nThis would normally show a detailed recipe view with ingredients and instructions.`);
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+
